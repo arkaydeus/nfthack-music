@@ -19,14 +19,14 @@ const MediaPage: NextPage = () => {
     let audioPlayer: ReactAudioPlayer;
 
     useEffect(() => {
-        const seconds = Math.floor(audioPlayer.audioEl.current?.duration);
+        const seconds = Math.floor(audioPlayer?.audioEl.current?.duration || 0);
         setDuration(calculateTime(seconds));
     }, [isPlaying]);
 
-    useEffect(() => {
-        const seconds = Math.floor(audioPlayer.audioEl.current?.currentTime);
-        setCurrentTime(calculateTime(seconds));
-    }, [audioPlayer?.audioEl.current?.currentTime]);
+    // useEffect(() => {
+    //     const seconds = Math.floor(audioPlayer.audioEl.current?.currentTime || 0);
+    //     setCurrentTime(calculateTime(seconds));
+    // }, [audioPlayer?.audioEl.current?.currentTime]);
 
 
     const calculateTime = (secs: number) => {
@@ -41,9 +41,11 @@ const MediaPage: NextPage = () => {
         const prevValue = isPlaying;
         setIsPlaying(!prevValue);
         if (!prevValue) {
+            // @ts-ignore
             audioPlayer?.audioEl?.current.play();
             // animationRef.current = requestAnimationFrame(whilePlaying)
         } else {
+            // @ts-ignore
             audioPlayer?.audioEl?.current.pause();
             // cancelAnimationFrame(animationRef.current);
         }
@@ -103,7 +105,8 @@ const MediaPage: NextPage = () => {
                                 className="hidden sm:flex mt-8 w-full bg-rose-600 border border-transparent rounded-md py-3 px-8 items-center justify-center text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 src={toValidHTTPSURI(data?.zoraNFT?.contentURI || "")}
                                 controls
-                                ref={(element) => {audioPlayer = element; }}
+                                ref={(element) => { // @ts-ignore
+                                    audioPlayer = element; }}
                             />
                         </div>
 

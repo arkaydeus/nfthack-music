@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { NextPage } from "next";
 import { useAccount, useBalance } from "wagmi";
 import { Layout, WalletOptionsModal } from "../components";
 import { createClient } from "urql";
@@ -48,7 +47,7 @@ const client = createClient({
 });
 
 
-const Home: NextPage = (props: Props) => {
+function Home(props: Props) {
   const [showWalletOptions, setShowWalletOptions] = useState(false);
   const [{ data: accountData, loading: accountLoading }] = useAccount();
   const [{ data: balanceData, loading: balanceLoading }] = useBalance({
@@ -110,7 +109,7 @@ const Home: NextPage = (props: Props) => {
       </Layout>
     </>
   );
-};
+}
 
 
 async function fetchData() {
@@ -163,7 +162,6 @@ async function fetchData() {
 export async function getServerSideProps() {
     const data = await fetchData().catch((err) => {
         console.log("broke calling fetchData");
-        console.error(err.message);
         console.error(err);
         return [];
     });
