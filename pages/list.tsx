@@ -1,5 +1,5 @@
 import { createClient } from "urql";
-import { useState, useEffect } from "react";
+import {deleteUndefined, toValidHTTPSURI} from "../utils/helpers";
 
 interface MediaQuery {
   id: string;
@@ -7,11 +7,16 @@ interface MediaQuery {
   metadataURI: string;
 }
 
+interface Description {
+    name: string;
+    description: string;
+}
+
 interface Token {
   id: string;
   contentURI: string;
   metadataURI: string;
-  meta: Object;
+  meta: Description;
   type: string;
 }
 
@@ -50,12 +55,12 @@ export default function Home(props: Props) {
                 {token && token.type === "audio" && (
                   <a
                     key={token.contentURI}
-                    href={token.id}
+                    href={`/media/${token.id}`}
                     className="group text-sm"
                   >
                     <div className="w-full aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100 group-hover:opacity-75">
                       <img
-                        src="https://source.unsplash.com/ILTfM75YtKM/400x400"
+                        src="https://source.unsplash.com/ojBNiaeykwc/400x400"
                         alt="placeholder"
                         className="w-full h-full object-center object-cover"
                       />
@@ -80,13 +85,6 @@ export default function Home(props: Props) {
   );
 }
 
-function toValidHTTPSURI(uri: string) {
-  if (uri.includes("ipfs://")) {
-    return `https://ipfs.io/ipfs/${uri.split("/").pop()}`;
-  }
-  return uri;
-}
-
 async function fetchData() {
   let data = await client.query(mediasQuery).toPromise();
   let tokenData = await Promise.all(
@@ -96,7 +94,10 @@ async function fetchData() {
         id: media.id,
         contentURI: media.contentURI,
         metadataURI: media.metadataURI,
-        meta: {},
+        meta: {
+          name: "",
+          description: "",
+        },
         type: "",
       };
       try {
@@ -129,18 +130,6 @@ async function fetchData() {
     })
   );
   return tokenData;
-}
-
-const deleteUndefined = (obj: Record<string, any> | undefined): void => {
-    if (obj) {
-        Object.keys(obj).forEach((key: string) => {
-            if (obj[key] && typeof obj[key] === 'object') {
-                deleteUndefined(obj[key]);
-            } else if (typeof obj[key] === 'undefined') {
-                delete obj[key]; // eslint-disable-line no-param-reassign
-            }
-        });
-    }
 }
 
 export async function getServerSideProps() {
